@@ -1,1 +1,104 @@
+import java.util.Scanner;
 
+class User {
+    private int id;
+    private int pin;
+    private String name;
+    private double balance;
+
+    public User(int id, int pin, String name, double balance) {
+        this.id = id;
+        this.pin = pin;
+        this.name = name;
+        this.balance = balance;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public boolean verifyPin(int pin) {
+        return this.pin == pin;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void addBalance(double amount) {
+        balance += amount;
+        System.out.println("Successfully added " + amount + " to your account.");
+    }
+
+    public void transferMoney(User recipient, double amount) {
+        if (amount <= balance) {
+            balance -= amount;
+            recipient.addBalance(amount);
+            System.out.println("Successfully transferred " + amount + " to " + recipient.name);
+        } else {
+            System.out.println("Insufficient funds for the transfer.");
+        }
+    }
+}
+
+public class BankingApp {
+
+    public static void main(String[] args) {
+        User user1 = new User(412435, 7452, "Chris Sandoval", 32000);
+        User user2 = new User(264863, 1349, "Marc Yim", 1000);
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter user ID:");
+        int userId = scanner.nextInt();
+
+        System.out.println("Enter PIN:");
+        int pin = scanner.nextInt();
+
+        User currentUser = null;
+
+        if (userId == user1.getId() && user1.verifyPin(pin)) {
+            currentUser = user1;
+        } else if (userId == user2.getId() && user2.verifyPin(pin)) {
+            currentUser = user2;
+        } else {
+            System.out.println("Invalid credentials. Exiting...");
+            System.exit(0);
+        }
+
+        while (true) {
+            System.out.println("\nWelcome, " + currentUser.getName());
+            System.out.println("1. Check Balance\n2. Cash-in\n3. Money Transfer\n4. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.println("Your current balance is: $" + currentUser.getBalance());
+                    break;
+
+                case 2:
+                    System.out.print("Enter the amount to add: $");
+                    double amountToAdd = scanner.nextDouble();
+                    currentUser.addBalance(amountToAdd);
+                    break;
+
+                case 3:
+                    System.out.print("Enter recipient's ID: ");
+                    int recipientId = scanner.nextInt();
+                    User recipientUser = (recipientId == user1.getId()) ? user1 : user2;
+
+                    System.out.print("Enter the amount to transfer: $");
+                    double transferAmount = scanner.nextDouble();
+                    currentUser.transferMoney(recipientUser, transferAmount);
+                    break;
+
+                case 4:
+                    System.exit(0);
+
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}
